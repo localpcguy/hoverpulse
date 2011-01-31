@@ -3,27 +3,28 @@
  * Examples and docs at: http://malsup.com/jquery/hoverpulse/
  * Dual licensed under the MIT and GPL
  * Requires: jQuery v1.2.6 or later
- * @version: 1.02  18-JAN-2010
+ * @version: 1.01  26-FEB-2009
+ *
+ * Modified to add Label ability 1/31/2011
+ * BUG(?) - mousing over the label causes mouseout on IMG
  */
 
 (function($) {
 
 $.fn.hoverpulse = function(options) {
-	// in 1.3+ we can fix mistakes with the ready state
-	if (this.length == 0) {
-		if (!$.isReady && this.selector) {
-			var s = this.selector, c = this.context;
-			$(function() {
-				$(s,c).hoverpulse(options);
-			});
-		}
-		return this;
-	}
+    // in 1.3+ we can fix mistakes with the ready state
+    if (this.length == 0) {
+        if (!$.isReady && this.selector) {
+            var s = this.selector, c = this.context;
+            $(function() {
+                $(s,c).hoverpulse(options);
+            });
+        }
+        return this;
+    }
 
 	var opts = $.extend({}, $.fn.hoverpulse.defaults, options);
 
-	// if not modified size_y is same as size
-	opts.size_y = opts.size_y || opts.size;
 	// parent must be relatively positioned
 	this.parent().css({ position: 'relative' });
 	// pulsing element must be absolutely positioned
@@ -45,11 +46,16 @@ $.fn.hoverpulse = function(options) {
 			var size = $this.data('hoverpulse.size');
 			var w = size.w, h = size.h;
 			$this.stop().animate({
-				top:  ('-'+opts.size_y+'px'),
+				top:  ('-'+opts.size+'px'),
 				left: ('-'+opts.size+'px'),
-				height: (h+2*opts.size_y)+'px',
-				width:  (w+2*opts.size)+'px'
-			}, opts.speed);
+				height: (h+2*opts.size)+'px',
+				width:	(w+2*opts.size)+'px'
+			}, opts.speed, function() {
+                if (opts.label) {
+                    var labelWidth = (w+2*opts.size-10)+'px';
+                    $this.siblings("span").show().css({left:'-'+opts.size+'px', top: '-'+opts.size+'px', width: labelWidth});
+                }
+            });
 		},
 		// hover out
 		function() {
@@ -61,8 +67,11 @@ $.fn.hoverpulse = function(options) {
 				top:  0,
 				left: 0,
 				height: (h+'px'),
-				width:  (w+'px')
+				width:	(w+'px')
 			}, opts.speed, function() {
+                if (opts.label) {
+                    $this.siblings("span").hide();
+                }
 				$this.parent().css('z-index', opts.zIndexNormal);
 			});
 		}
@@ -71,10 +80,10 @@ $.fn.hoverpulse = function(options) {
 
 $.fn.hoverpulse.defaults = {
 	size:  20,
-	size_y: 0,
 	speed: 200,
 	zIndexActive: 100,
-	zIndexNormal: 1
+	zIndexNormal: 1,
+    label: false
 };
 
 })(jQuery);
