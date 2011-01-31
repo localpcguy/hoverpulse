@@ -63,15 +63,15 @@ $.fn.hoverpulse = function(options) {
 			var size = $this.data('hoverpulse.size');
 			var w = size.w, h = size.h;
 
+            if (opts.label) {
+                $this.siblings("span").hide();
+            }
 			$this.stop().animate({
 				top:  0,
 				left: 0,
 				height: (h+'px'),
 				width:	(w+'px')
 			}, opts.speed, function() {
-                if (opts.label) {
-                    $this.siblings("span").hide();
-                }
 				$this.parent().css('z-index', opts.zIndexNormal);
 			});
 		}
